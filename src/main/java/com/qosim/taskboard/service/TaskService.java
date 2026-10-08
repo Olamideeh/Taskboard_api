@@ -2,6 +2,7 @@ package com.qosim.taskboard.service;
 
 import com.qosim.taskboard.dto.UpdateTaskRequest;
 import com.qosim.taskboard.enity.Task;
+import com.qosim.taskboard.exception.TaskErrorResponse;
 import com.qosim.taskboard.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +40,7 @@ public class TaskService {
 
         return taskRepository.findById(taskId)
                 .orElseThrow(() ->
-                        new RuntimeException(
+                        new TaskErrorResponse(
                                 "Task with id " + taskId + " not found"
                         )
                 );
@@ -47,12 +48,12 @@ public class TaskService {
     // GET BY NAME
     public Task getTaskByName(String taskName) {
         if (taskName == null || taskName.isBlank()) {
-            throw new RuntimeException("Task name cannot be empty");
+            throw new TaskErrorResponse ("Task name cannot be empty");
         }
 
         return taskRepository.getTaskByName(taskName)
                 .orElseThrow(() ->
-                        new RuntimeException(
+                        new TaskErrorResponse(
                                 "Task with name " + taskName + " not found"
                         )
                 );
@@ -62,7 +63,7 @@ public class TaskService {
 
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() ->
-                        new RuntimeException(
+                        new TaskErrorResponse(
                                 "Task with id " + taskId + " not found"
                         )
                 );
