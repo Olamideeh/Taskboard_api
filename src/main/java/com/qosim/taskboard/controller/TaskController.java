@@ -3,6 +3,7 @@ package com.qosim.taskboard.controller;
 import com.qosim.taskboard.dto.UpdateTaskRequest;
 import com.qosim.taskboard.enity.Task;
 import com.qosim.taskboard.service.TaskService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,7 @@ public class TaskController {
     }
 
     @PostMapping("/createtask")
-    public ResponseEntity<Task> createTask(
+    public ResponseEntity<Task> createTask(@Valid
             @RequestBody UpdateTaskRequest request) {
 
         Task savedTask = taskService.createTask(request);
@@ -55,5 +56,21 @@ public class TaskController {
         taskService.deleteTaskById(id);
 
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+    @PutMapping("/createtask")
+    public ResponseEntity<Task> createtask ( @RequestBody UpdateTaskRequest request) {
+        Task savedTask = taskService.createTask(request);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(savedTask);
+    }
+    @PutMapping("/{id}")
+    public ResponseEntity<Task> updateTask( @PathVariable int id, @Valid @RequestBody UpdateTaskRequest request) {
+        Task task = taskService.UpdateTaskByID(id,request);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(task);
     }
 }

@@ -2,15 +2,21 @@ package com.qosim.taskboard.dto;
 
 import com.qosim.taskboard.enums.TaskPriority;
 import com.qosim.taskboard.enums.TaskStatus;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class UpdateTaskRequest {
 
     private Long id;
-    private String TaskName;
+    @NotBlank(message = "task name is required")
+    private String taskName;
+    @NotBlank(message = "description is required ")
     private String description;
-    TaskPriority taskPriority;
-    TaskStatus taskStatus;
+    @NotNull(message = "input task priority ")
+    private TaskPriority taskPriority;
+    @NotNull(message = "input task status ")
+    private TaskStatus taskStatus;
 
 }

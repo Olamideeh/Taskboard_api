@@ -2,12 +2,12 @@ package com.qosim.taskboard.service;
 
 import com.qosim.taskboard.dto.UpdateTaskRequest;
 import com.qosim.taskboard.enity.Task;
-import com.qosim.taskboard.exception.TaskErrorResponse;
+import com.qosim.taskboard.exception.TaskNotFound;
 import com.qosim.taskboard.repository.TaskRepository;
+import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class TaskService {
@@ -40,7 +40,7 @@ public class TaskService {
 
         return taskRepository.findById(taskId)
                 .orElseThrow(() ->
-                        new TaskErrorResponse(
+                        new TaskNotFound(
                                 "Task with id " + taskId + " not found"
                         )
                 );
@@ -48,12 +48,12 @@ public class TaskService {
     // GET BY NAME
     public Task getTaskByName(String taskName) {
         if (taskName == null || taskName.isBlank()) {
-            throw new TaskErrorResponse ("Task name cannot be empty");
+            throw new TaskNotFound("Task name cannot be empty");
         }
 
         return taskRepository.getTaskByName(taskName)
                 .orElseThrow(() ->
-                        new TaskErrorResponse(
+                        new TaskNotFound(
                                 "Task with name " + taskName + " not found"
                         )
                 );
@@ -63,11 +63,25 @@ public class TaskService {
 
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() ->
-                        new TaskErrorResponse(
+                        new TaskNotFound(
                                 "Task with id " + taskId + " not found"
                         )
                 );
 
         taskRepository.delete(task);
+    }
+
+    public Task UpdateTaskByID(int taskId, UpdateTaskRequest request) {
+        Task task = taskRepository.getTaskById(taskId)
+                .orElseThrow(() ->
+                        new TaskNotFound("task with id " + taskId + "not found"));
+
+
+        task.setTaskName(request.getTaskName());
+        task.setDescription(request.getDescription());
+        task.setPriority(request.getTaskPriority());
+        task.setStatus(request.getTaskStatus());
+
+        return taskRepository.save(task);
     }
 }
