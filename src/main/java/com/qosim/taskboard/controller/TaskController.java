@@ -5,11 +5,10 @@ import com.qosim.taskboard.enity.Task;
 import com.qosim.taskboard.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/task/")
@@ -32,19 +31,17 @@ public class TaskController {
     }
 
     @GetMapping("/gettask")
-    public ResponseEntity<List<Task>> getAllTask()
-    {return ResponseEntity.ok(taskService.getAllTasks());
+    public ResponseEntity<Page<Task>> getAllTasks(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "id") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction) {
 
+        return ResponseEntity.ok(
+                taskService.getAllTasks(page, size, sortBy, direction)
+        );
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity <Task> getTaskById(@PathVariable int id ) {
-        Task savedTask = taskService.getTaskByID(id);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(savedTask);
-    }
 
     @GetMapping("/name/{name}")
     public ResponseEntity<Task> getTaskByName(@PathVariable String name) {
@@ -56,14 +53,6 @@ public class TaskController {
         taskService.deleteTaskById(id);
 
         return ResponseEntity.status(HttpStatus.OK).build();
-    }
-    @PutMapping("/createtask")
-    public ResponseEntity<Task> createtask ( @RequestBody UpdateTaskRequest request) {
-        Task savedTask = taskService.createTask(request);
-
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(savedTask);
     }
     @PutMapping("/{id}")
     public ResponseEntity<Task> updateTask( @PathVariable int id, @Valid @RequestBody UpdateTaskRequest request) {

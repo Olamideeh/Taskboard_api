@@ -4,8 +4,11 @@ import com.qosim.taskboard.dto.UpdateTaskRequest;
 import com.qosim.taskboard.enity.Task;
 import com.qosim.taskboard.exception.TaskNotFound;
 import com.qosim.taskboard.repository.TaskRepository;
-import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -29,10 +32,17 @@ public class TaskService {
         return taskRepository.save(task);
 
     }
-   // GET ALL
-    public List<Task> getAllTasks() {
-        return taskRepository.findAll();
 
+    public Page<Task> getAllTasks(int page, int size,
+                                  String sortBy, String direction) {
+
+        Sort sort = direction.equalsIgnoreCase("desc")
+                ? Sort.by(sortBy).descending()
+                : Sort.by(sortBy).ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        return taskRepository.findAll(pageable);
     }
 
     // GET BY ID
@@ -51,7 +61,7 @@ public class TaskService {
             throw new TaskNotFound("Task name cannot be empty");
         }
 
-        return taskRepository.getTaskByName(taskName)
+        return taskRepository.getTaskByName(taskName )
                 .orElseThrow(() ->
                         new TaskNotFound(
                                 "Task with name " + taskName + " not found"
